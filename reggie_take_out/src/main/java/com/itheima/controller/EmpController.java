@@ -27,10 +27,30 @@ public class EmpController {
     @Autowired
     private EmpService empService;
 
+    /**
+     * 用户登录接口
+     *
+     * @param employee 用户
+     * @param session
+     * @return
+     */
     @PostMapping("/login")
     public R login(@RequestBody Employee employee, HttpSession session) {
         R loginR = empService.login(employee);
         if (ObjectUtil.isNotNull(loginR.getData())) session.setAttribute("employee", loginR.getData());
         return loginR;
+    }
+
+    /**
+     * 用户退出登录接口
+     *
+     * @param session
+     * @return
+     */
+    @PostMapping("/logout")
+    public R logout(HttpSession session) {
+        // 销毁session
+        session.invalidate();
+        return R.success(null);
     }
 }
