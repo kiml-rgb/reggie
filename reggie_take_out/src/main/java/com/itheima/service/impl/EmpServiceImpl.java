@@ -44,6 +44,9 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         // 将加密后的密码与数据库中查询到的进行比较
         if (!StrUtil.equals(md5, one.getPassword(), true)) return R.error("用户名或密码错误");
 
+        // 判断账户是否可用
+        if (one.getStatus() == 0) return R.error("该账户已被禁用");
+
         // 返回登陆成功数据
         return R.success(one);
     }
