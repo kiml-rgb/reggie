@@ -9,6 +9,7 @@ import com.itheima.domain.Employee;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
 import com.itheima.vo.R;
+import org.springframework.stereotype.Service;
 
 /**
  * @author zyf
@@ -16,6 +17,7 @@ import com.itheima.vo.R;
  * @description: Emp的业务实现类
  * @date 2022-09-11 16:44:13
  */
+@Service
 public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements EmpService {
     /**
      * 员工登陆业务
@@ -28,7 +30,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
 
         // 判断用户名或密码是否为空
-        if (StrUtil.hasEmpty(employee.getName(), employee.getPassword())) return R.error("用户名或密码不能为空");
+        if (StrUtil.hasEmpty(employee.getUsername(), employee.getPassword())) return R.error("用户名或密码不能为空");
 
         // 根据用户名查询一个Emp对象
         Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class)
