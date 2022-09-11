@@ -4,12 +4,16 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Employee;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
 import com.itheima.vo.R;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+
+import java.time.LocalDateTime;
 
 /**
  * @author zyf
@@ -50,4 +54,36 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         // 返回登陆成功数据
         return R.success(one);
     }
+
+    @Override
+    public R addEmployee(Employee employee, Long empId) {
+        // 设置初始密码123456
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+
+        if (this.save(employee)) {
+            return R.builder().code(1).msg("添加成功").data("添加成功").build();
+        }
+
+        return R.error("添加失败，请稍后重试");
+    }
+
+    @Override
+    public R findEmployeeByPage(Integer page, Integer pageSize, String name) {
+        Page<Employee> pageInfo = new Page<>(page, pageSize);
+
+        this.page(pageInfo,
+                Wrappers.lambdaQuery(Employee.class)
+                        .like(StrUtil.isNotEmpty(name), Employee::getName, name)
+                        .orderByDesc(Employee::getUpdateTime));
+
+        return R.success(pageInfo);
+    }
+
+
 }

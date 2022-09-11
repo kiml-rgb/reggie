@@ -6,10 +6,7 @@ import com.itheima.service.EmpService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,5 +49,32 @@ public class EmpController {
         // 销毁session
         session.invalidate();
         return R.success(null);
+    }
+
+    /**
+     * 添加员工
+     * @param request request
+     * @param employee 员工
+     * @return R
+     */
+    @PostMapping
+    public R addEmployee(HttpServletRequest request, @RequestBody Employee employee) {
+        Long empId = (Long) request.getSession().getAttribute("employee");
+        if (ObjectUtil.isNull(empId)) {
+            return R.error("请先登陆");
+        }
+        return empService.addEmployee(employee, empId);
+    }
+
+    /**
+     * 分页查询
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @param name 条件查询 名字
+     * @return R
+     */
+    @GetMapping("/page")
+    public R findEmployeeByPage(Integer page, Integer pageSize, String name) {
+        return empService.findEmployeeByPage(page, pageSize, name);
     }
 }
