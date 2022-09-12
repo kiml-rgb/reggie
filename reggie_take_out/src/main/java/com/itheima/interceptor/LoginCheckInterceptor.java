@@ -19,21 +19,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class LoginCheckInterceptor implements HandlerInterceptor {
-    //路径匹配器，支持通配符
-    public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 判断本次请求是否需要拦截
-
-        // 通过匹配路径
-        // String requestURI = request.getRequestURI();
-
-        /*String[] urls = new String[] {"/employee/login", "/employee/logout", "/backend/**", "/front/**"};
-
-        if (check(urls, requestURI)) {
-            return true;
-        }*/
 
         if (!(handler instanceof HandlerMethod)) return true;
 
@@ -41,29 +30,14 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (ObjectUtil.isNotNull(request.getSession().getAttribute("employee"))) return true;
 
+        // 设置状态码401
         response.setStatus(401);
 
         response.setContentType("application/json;charset=utf-8");
 
-        response.getWriter().println(JSONUtil.toJsonStr(R.error("用户未登录")));
+        response.getWriter().write(JSONUtil.toJsonStr(R.error("用户未登录")));
 
         // 判断是否登录，没有直接返回401
-        return false;
-    }
-
-    /**
-     * 路径匹配，检查本次请求是否需要放行
-     * @param urls
-     * @param requestURI
-     * @return
-     */
-    public boolean check(String[] urls,String requestURI){
-        for (String url : urls) {
-            boolean match = PATH_MATCHER.match(url, requestURI);
-            if(match){
-                return true;
-            }
-        }
         return false;
     }
 }
