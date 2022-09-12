@@ -27,8 +27,8 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
         if (ObjectUtil.isNull(getFieldValByName("createUser", metaObject)))
             setFieldValByName("createUser", EmpThreadLocal.get().getId(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
-            setFieldValByName("updateTime", EmpThreadLocal.get().getId(), metaObject);
+        if (ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
+            setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
     }
 
 
@@ -36,7 +36,7 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         if (ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
-            setFieldValByName("updateTime", EmpThreadLocal.get().getId(), metaObject);
+        if (ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
+            setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
     }
 }

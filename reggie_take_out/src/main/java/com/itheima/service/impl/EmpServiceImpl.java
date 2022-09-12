@@ -104,20 +104,9 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     @Override
     public R updateStatusEmployee(Employee employee) {
         // 判断传入的参数是否合法
-        if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
+        if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId())) return R.error("参数不合法");
 
-        Employee one = this.getById(employee.getId());
-
-        // 更新状态
-        one.setStatus(one.getStatus() == 1 ? 0 : 1);
-
-        // 更新更新时间
-        one.setUpdateTime(LocalDateTime.now());
-
-        // 更新更新人
-        one.setUpdateUser(EmpThreadLocal.get().getId());
-
-        if (this.updateById(one)) {
+        if (this.updateById(employee)) {
             return R.builder().code(1).msg("更新成功").data("更新成功").build();
         }
 
