@@ -59,11 +59,11 @@ public class EmpController {
      */
     @PostMapping
     public R addEmployee(HttpServletRequest request, @RequestBody Employee employee) {
-        Long empId = (Long) request.getSession().getAttribute("employee");
-        if (ObjectUtil.isNull(empId)) {
+        Employee emp = (Employee) request.getSession().getAttribute("employee");
+        if (ObjectUtil.isNull(emp)) {
             return R.error("请先登陆");
         }
-        return empService.addEmployee(employee, empId);
+        return empService.addEmployee(employee, emp.getId());
     }
 
     /**
