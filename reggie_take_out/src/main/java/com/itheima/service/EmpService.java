@@ -24,7 +24,7 @@ public interface EmpService extends IService<Employee> {
      * @param employee 员工
      * @return R
      */
-    R addEmployee(Employee employee, Long empId);
+    R addEmployee(Employee employee);
 
     /**
      * 分页查询
@@ -34,4 +34,11 @@ public interface EmpService extends IService<Employee> {
      * @return R
      */
     R findEmployeeByPage(Integer page, Integer pageSize, String name);
+
+    /**
+     * 启用/禁用状态
+     * @param employee employee
+     * @return R
+     */
+    R updateStatusEmployee(Employee employee);
 }

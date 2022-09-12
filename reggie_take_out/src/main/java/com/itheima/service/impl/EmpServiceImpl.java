@@ -1,7 +1,6 @@
 package com.itheima.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.*;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Employee;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
+import com.itheima.utils.EmpThreadLocal;
 import com.itheima.vo.R;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements EmpService {
     /**
      * 员工登陆业务
+     *
      * @param employee 员工
      * @return R
      */
@@ -56,15 +57,27 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     }
 
     @Override
-    public R addEmployee(Employee employee, Long empId) {
+    public R addEmployee(Employee employee) {
+        // 判断传入的参数是否合法
+        if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
+
+        if (ObjectUtil.hasEmpty(employee.getName(), employee.getUsername(), employee.getPhone(),
+                employee.getIdNumber())) return R.error("参数不合法");
+
+        if (!PhoneUtil.isMobile(employee.getPhone())) return R.error("手机号码格式不正确");
+
+        if (!IdcardUtil.isValidCard(employee.getIdNumber())) return R.error("身份证号码格式不正确");
+
+        Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class).eq(Employee::getUsername, employee.getUsername()));
+        if (ObjectUtil.isNotNull(one)) return R.error("用户名已被占用");
+
         // 设置初始密码123456
-        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        employee.setPassword(SecureUtil.md5("123456"));
 
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
+        // employee.setCreateTime(LocalDateTime.now());
+        // employee.setUpdateTime(LocalDateTime.now());
+        // employee.setCreateUser(EmpThreadLocal.get().getId());
+        // employee.setUpdateUser(EmpThreadLocal.get().getId());
 
         if (this.save(employee)) {
             return R.builder().code(1).msg("添加成功").data("添加成功").build();
@@ -83,6 +96,29 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
                         .orderByDesc(Employee::getUpdateTime));
 
         return R.success(pageInfo);
+    }
+
+    @Override
+    public R updateStatusEmployee(Employee employee) {
+        // 判断传入的参数是否合法
+        if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
+
+        Employee one = this.getById(employee.getId());
+
+        // 更新状态
+        one.setStatus(one.getStatus() == 1 ? 0 : 1);
+
+        // 更新更新时间
+        one.setUpdateTime(LocalDateTime.now());
+
+        // 更新更新人
+        one.setUpdateUser(EmpThreadLocal.get().getId());
+
+        if (this.updateById(one)) {
+            return R.builder().code(1).msg("更新成功").data("更新成功").build();
+        }
+
+        return R.error("更新失败，请稍后重试");
     }
 
 

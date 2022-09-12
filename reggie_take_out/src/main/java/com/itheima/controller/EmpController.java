@@ -53,17 +53,15 @@ public class EmpController {
 
     /**
      * 添加员工
-     * @param request request
+     * @param session session
      * @param employee 员工
      * @return R
      */
     @PostMapping
-    public R addEmployee(HttpServletRequest request, @RequestBody Employee employee) {
-        Employee emp = (Employee) request.getSession().getAttribute("employee");
-        if (ObjectUtil.isNull(emp)) {
-            return R.error("请先登陆");
-        }
-        return empService.addEmployee(employee, emp.getId());
+    public R addEmployee(HttpSession session, @RequestBody Employee employee) {
+        Employee emp = (Employee) session.getAttribute("employee");
+        if (ObjectUtil.isNull(emp)) return R.error("请先登陆");
+        return empService.addEmployee(employee);
     }
 
     /**
@@ -76,5 +74,12 @@ public class EmpController {
     @GetMapping("/page")
     public R findEmployeeByPage(Integer page, Integer pageSize, String name) {
         return empService.findEmployeeByPage(page, pageSize, name);
+    }
+
+    @PutMapping()
+    public R updateStatusEmployee(@RequestBody Employee employee, HttpSession session) {
+        Employee emp = (Employee) session.getAttribute("employee");
+        if (ObjectUtil.isNull(emp)) return R.error("请先登陆");
+        return empService.updateStatusEmployee(employee);
     }
 }
