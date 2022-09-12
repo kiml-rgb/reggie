@@ -37,7 +37,8 @@ public interface EmpService extends IService<Employee> {
     /**
      * 启用/禁用状态
      * @param employee employee
+     * @param string 信息/状态
      * @return R
      */
-    R updateStatusEmployee(Employee employee);
+    R updateStatusEmployee(Employee employee, String string);
 }

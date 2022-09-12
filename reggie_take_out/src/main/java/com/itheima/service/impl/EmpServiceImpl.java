@@ -9,12 +9,8 @@ import com.itheima.domain.Employee;
 import com.itheima.dto.EmpPageDto;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
-import com.itheima.utils.EmpThreadLocal;
 import com.itheima.vo.R;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
-
-import java.time.LocalDateTime;
 
 /**
  * @author zyf
@@ -61,14 +57,10 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     public R addEmployee(Employee employee) {
         // 判断传入的参数是否合法
         if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
-
         if (ObjectUtil.hasEmpty(employee.getName(), employee.getUsername(), employee.getPhone(),
                 employee.getIdNumber())) return R.error("参数不合法");
-
         if (!PhoneUtil.isMobile(employee.getPhone())) return R.error("手机号码格式不正确");
-
         if (!IdcardUtil.isValidCard(employee.getIdNumber())) return R.error("身份证号码格式不正确");
-
         Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class).eq(Employee::getUsername, employee.getUsername()));
         if (ObjectUtil.isNotNull(one)) return R.error("用户名已被占用");
 
@@ -102,9 +94,20 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     }
 
     @Override
-    public R updateStatusEmployee(Employee employee) {
-        // 判断传入的参数是否合法
-        if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId())) return R.error("参数不合法");
+    public R updateStatusEmployee(Employee employee, String string) {
+        if (StrUtil.equals(string, "info", true)) {
+            // 判断传入的参数是否合法
+            if (ObjectUtil.isNull(employee)) return R.error("参数不合法");
+            if (ObjectUtil.hasEmpty(employee.getName(), employee.getUsername(), employee.getPhone(),
+                    employee.getIdNumber())) return R.error("参数不合法");
+            if (!PhoneUtil.isMobile(employee.getPhone())) return R.error("手机号码格式不正确");
+            if (!IdcardUtil.isValidCard(employee.getIdNumber())) return R.error("身份证号码格式不正确");
+            Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class).eq(Employee::getUsername, employee.getUsername()));
+            if (ObjectUtil.isNotNull(one)) return R.error("用户名已被占用");
+        } else {
+            // 判断传入的参数是否合法
+            if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId())) return R.error("参数不合法");
+        }
 
         if (this.updateById(employee)) {
             return R.builder().code(1).msg("更新成功").data("更新成功").build();

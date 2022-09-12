@@ -8,6 +8,7 @@ import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -52,7 +53,8 @@ public class EmpController {
 
     /**
      * 添加员工
-     * @param session session
+     *
+     * @param session  session
      * @param employee 员工
      * @return R
      */
@@ -65,6 +67,7 @@ public class EmpController {
 
     /**
      * 分页查询
+     *
      * @param empPageDto
      * @return R
      */
@@ -73,10 +76,32 @@ public class EmpController {
         return empService.findEmployeeByPage(empPageDto);
     }
 
+    /**
+     * 更新 状态/员工
+     * @param employee 员工
+     * @param session
+     * @return
+     */
     @PutMapping()
-    public R updateStatusEmployee(@RequestBody Employee employee, HttpSession session) {
-        Employee emp = (Employee) session.getAttribute("employee");
-        if (ObjectUtil.isNull(emp)) return R.error("请先登陆");
-        return empService.updateStatusEmployee(employee);
+    public R updateStatusEmployee(@RequestBody Employee employee, HttpServletRequest request) {
+
+        if (request.getHeader("Referer").contains("list.html")) {
+            // 修改状态
+            return empService.updateStatusEmployee(employee, "status");
+        } else {
+            // 修改信息
+            return empService.updateStatusEmployee(employee, "info");
+        }
+    }
+
+    /**
+     * 根据id查询
+     *
+     * @param id id
+     * @return R
+     */
+    @GetMapping("{id}")
+    public R findEmployeeById(@PathVariable Long id) {
+        return R.success(empService.getById(id));
     }
 }
