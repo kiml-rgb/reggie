@@ -2,13 +2,12 @@ package com.itheima.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.itheima.domain.Employee;
+import com.itheima.dto.EmpPageDto;
 import com.itheima.service.EmpService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -66,14 +65,12 @@ public class EmpController {
 
     /**
      * 分页查询
-     * @param page 页码
-     * @param pageSize 每页数量
-     * @param name 条件查询 名字
+     * @param empPageDto
      * @return R
      */
     @GetMapping("/page")
-    public R findEmployeeByPage(Integer page, Integer pageSize, String name) {
-        return empService.findEmployeeByPage(page, pageSize, name);
+    public R findEmployeeByPage(EmpPageDto empPageDto) {
+        return empService.findEmployeeByPage(empPageDto);
     }
 
     @PutMapping()

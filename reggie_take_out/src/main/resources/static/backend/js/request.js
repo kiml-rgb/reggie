@@ -53,6 +53,7 @@
       }
     },
     error => {
+      if (error.response.status == 401) window.top.location.href = '/backend/page/login/login.html';
       console.log('err' + error)
       let { message } = error;
       if (message == "Network Error") {

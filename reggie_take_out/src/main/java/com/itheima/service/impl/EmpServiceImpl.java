@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Employee;
+import com.itheima.dto.EmpPageDto;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
 import com.itheima.utils.EmpThreadLocal;
@@ -87,12 +88,14 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     }
 
     @Override
-    public R findEmployeeByPage(Integer page, Integer pageSize, String name) {
-        Page<Employee> pageInfo = new Page<>(page, pageSize);
+    public R findEmployeeByPage(EmpPageDto empPageDto) {
+        empPageDto.check();
+
+        Page<Employee> pageInfo = new Page<>(empPageDto.getPage(), empPageDto.getPageSize());
 
         this.page(pageInfo,
                 Wrappers.lambdaQuery(Employee.class)
-                        .like(StrUtil.isNotEmpty(name), Employee::getName, name)
+                        .like(StrUtil.isNotEmpty(empPageDto.getName()), Employee::getName, empPageDto.getName())
                         .orderByDesc(Employee::getUpdateTime));
 
         return R.success(pageInfo);

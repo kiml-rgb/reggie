@@ -2,6 +2,7 @@ package com.itheima.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itheima.domain.Employee;
+import com.itheima.dto.EmpPageDto;
 import com.itheima.vo.R;
 
 /**
@@ -28,12 +29,10 @@ public interface EmpService extends IService<Employee> {
 
     /**
      * 分页查询
-     * @param page 页码
-     * @param pageSize 页面大小
-     * @param name 姓名（可选）
+     * @param empPageDto
      * @return R
      */
-    R findEmployeeByPage(Integer page, Integer pageSize, String name);
+    R findEmployeeByPage(EmpPageDto empPageDto);
 
     /**
      * 启用/禁用状态
