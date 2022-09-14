@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Employee;
-import com.itheima.dto.EmpPageDto;
+import com.itheima.dto.PageDto;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
 import com.itheima.vo.R;
@@ -80,7 +80,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
     }
 
     @Override
-    public R findEmployeeByPage(EmpPageDto empPageDto) {
+    public R findEmployeeByPage(PageDto empPageDto) {
         empPageDto.check();
 
         Page<Employee> pageInfo = new Page<>(empPageDto.getPage(), empPageDto.getPageSize());

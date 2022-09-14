@@ -2,7 +2,7 @@ package com.itheima.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.itheima.domain.Employee;
-import com.itheima.dto.EmpPageDto;
+import com.itheima.dto.PageDto;
 import com.itheima.service.EmpService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +72,14 @@ public class EmpController {
      * @return R
      */
     @GetMapping("/page")
-    public R findEmployeeByPage(EmpPageDto empPageDto) {
+    public R findEmployeeByPage(PageDto empPageDto) {
         return empService.findEmployeeByPage(empPageDto);
     }
 
     /**
      * 更新 状态/员工
      * @param employee 员工
-     * @param session
+     * @param request request
      * @return
      */
     @PutMapping()

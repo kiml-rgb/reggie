@@ -2,7 +2,7 @@ package com.itheima.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itheima.domain.Employee;
-import com.itheima.dto.EmpPageDto;
+import com.itheima.dto.PageDto;
 import com.itheima.vo.R;
 
 /**
@@ -32,7 +32,7 @@ public interface EmpService extends IService<Employee> {
      * @param empPageDto
      * @return R
      */
-    R findEmployeeByPage(EmpPageDto empPageDto);
+    R findEmployeeByPage(PageDto empPageDto);
 
     /**
      * 启用/禁用状态
