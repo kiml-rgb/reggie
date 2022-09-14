@@ -37,4 +37,14 @@ public class CategoryController {
     public R deleteCategory(Long id) {
         return categoryService.deleteCategory(id);
     }
+
+    @GetMapping("{id}")
+    public R findCategoryById(@PathVariable Long id) {
+        return R.success(categoryService.getById(id));
+    }
+
+    @PutMapping
+    public R updateCategory(@RequestBody Category category) {
+        return categoryService.updateCategory(category);
+    }
 }

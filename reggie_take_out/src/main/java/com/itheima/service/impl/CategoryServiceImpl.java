@@ -55,5 +55,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (this.removeById(id)) return R.success(null);
         return R.error("删除失败，请稍后重试");
     }
+
+    @Override
+    public R updateCategory(Category category) {
+        if (ObjectUtil.hasEmpty(category.getId(), category.getSort(), category.getName()))
+            return R.error("参数不能为空");
+
+        Category old = this.getById(category.getId());
+        if (old.getName().equals(category.getName())) {
+            Category one = this.getOne(Wrappers.lambdaQuery(Category.class).eq(Category::getName, category.getName()));
+            if (ObjectUtil.isNotNull(one)) return R.error("分类已经存在");
+        }
+
+        if (this.updateById(category)) return R.success(null);
+        return R.error("更新失败,请稍后重试");
+    }
 }
 

@@ -26,4 +26,11 @@ public interface CategoryService extends IService<Category> {
      * @return R
      */
     R deleteCategory(Long id);
+
+    /**
+     * 修改套餐
+     * @param category category
+     * @return R
+     */
+    R updateCategory(Category category);
 }

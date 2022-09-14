@@ -9,6 +9,7 @@ import com.itheima.vo.R;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,5 +45,18 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 判断是否登录，没有直接返回401
         return false;
+    }
+
+    /**
+     * 请求回到浏览器之前执行
+     * @param request request
+     * @param response response
+     * @param handler handler
+     * @param modelAndView modelAndView
+     * @throws Exception
+     */
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        EmpThreadLocal.remove();
     }
 }
