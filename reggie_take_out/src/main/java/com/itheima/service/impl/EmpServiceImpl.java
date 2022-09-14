@@ -102,8 +102,14 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
                     employee.getIdNumber())) return R.error("参数不合法");
             if (!PhoneUtil.isMobile(employee.getPhone())) return R.error("手机号码格式不正确");
             if (!IdcardUtil.isValidCard(employee.getIdNumber())) return R.error("身份证号码格式不正确");
-            Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class).eq(Employee::getUsername, employee.getUsername()));
-            if (ObjectUtil.isNotNull(one)) return R.error("用户名已被占用");
+
+            Employee oldEmp = this.getById(employee);
+            if (!StrUtil.equals(oldEmp.getUsername(), employee.getUsername())) {
+                Employee one = this.getOne(Wrappers.lambdaQuery(Employee.class).eq(Employee::getUsername, employee.getUsername()));
+                // 如果业务允许修改用户名，得先判断用户输入的用户名是否和之前一样
+                if (ObjectUtil.isNotNull(one)) return R.error("用户名已被占用");
+            }
+
         } else {
             // 判断传入的参数是否合法
             if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId())) return R.error("参数不合法");
