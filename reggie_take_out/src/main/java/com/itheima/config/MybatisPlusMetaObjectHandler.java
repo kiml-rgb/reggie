@@ -21,22 +21,22 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         // metaObject 我们调用新增方法时传递的对象
-        if (ObjectUtil.isNull(getFieldValByName("createTime", metaObject)))
+        if (metaObject.hasGetter("createTime") && ObjectUtil.isNull(getFieldValByName("createTime", metaObject)))
             setFieldValByName("createTime", LocalDateTime.now(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
+        if (metaObject.hasGetter("updateTime") && ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("createUser", metaObject)))
+        if (metaObject.hasGetter("createUser") && ObjectUtil.isNull(getFieldValByName("createUser", metaObject)))
             setFieldValByName("createUser", EmpThreadLocal.get().getId(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
+        if (metaObject.hasGetter("updateUser") && ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
             setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
     }
 
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        if (ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
+        if (metaObject.hasGetter("updateTime") && ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        if (ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
+        if (metaObject.hasGetter("updateUser") && ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
             setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
     }
 }
