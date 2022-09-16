@@ -37,5 +37,17 @@ public class DishController {
                         .like(StrUtil.isNotEmpty(pageDto.getName()), Dish::getName, pageDto.getName())));
     }
 
+    @GetMapping("{id}")
+    public R findDishById(@PathVariable Long id) {
+        return dishService.findDishById(id);
+    }
+
+    @PutMapping
+    public R updateDish(@RequestBody Dish dish) {
+        return dishService.saveDish(dish);
+    }
+
+
+
 
 }

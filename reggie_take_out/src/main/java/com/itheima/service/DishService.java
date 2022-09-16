@@ -13,9 +13,16 @@ import com.itheima.vo.R;
  */
 public interface DishService extends IService<Dish> {
     /**
-     * 新增Dish
+     * 新增菜品
      * @param dish
      * @return
      */
     R saveDish(Dish dish);
+
+    /**
+     * 根据id查找id
+     * @param id
+     * @return
+     */
+    R findDishById(Long id);
 }
