@@ -7,6 +7,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author zyf
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @MapperScan("com.itheima.mapper")
+@EnableTransactionManagement
 public class App {
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);

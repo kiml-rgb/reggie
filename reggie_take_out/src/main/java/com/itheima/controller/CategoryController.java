@@ -1,6 +1,7 @@
 package com.itheima.controller;
 
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.domain.Category;
 import com.itheima.dto.PageDto;
@@ -46,5 +47,11 @@ public class CategoryController {
     @PutMapping
     public R updateCategory(@RequestBody Category category) {
         return categoryService.updateCategory(category);
+    }
+
+    @GetMapping("/list")
+    public R findCategory(Integer type) {
+        if (type <= 0) type = 1;
+        return R.success(categoryService.list(Wrappers.lambdaQuery(Category.class).eq(Category::getType, type)));
     }
 }
