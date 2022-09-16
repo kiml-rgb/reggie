@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author zyf
@@ -47,7 +48,18 @@ public class DishController {
         return dishService.saveDish(dish);
     }
 
+    @DeleteMapping
+    public R deleteDishByIds(@RequestParam("ids") List<Long> ids) {
+        return dishService.deleteDishByIds(ids);
+    }
 
+    @PostMapping("status/1")
+    public R onStatusByIds(@RequestParam("ids") List<Long> ids) {
+        return dishService.updateStatusByIds(1, ids);
+    }
 
-
+    @PostMapping("status/0")
+    public R downStatusByIds(@RequestParam("ids") List<Long> ids) {
+        return dishService.updateStatusByIds(0, ids);
+    }
 }

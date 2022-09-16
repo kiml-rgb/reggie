@@ -5,6 +5,8 @@ import com.itheima.domain.Dish;
 import com.itheima.mapper.DishMapper;
 import com.itheima.vo.R;
 
+import java.util.List;
+
 /**
  * @author zyf
  * @program: reggie_take_out
@@ -14,15 +16,30 @@ import com.itheima.vo.R;
 public interface DishService extends IService<Dish> {
     /**
      * 新增菜品
-     * @param dish
-     * @return
+     * @param dish 菜品
+     * @return R
      */
     R saveDish(Dish dish);
 
     /**
      * 根据id查找id
-     * @param id
-     * @return
+     * @param id id
+     * @return R
      */
     R findDishById(Long id);
+
+    /**
+     * 根据id删除
+     * @param ids ids
+     * @return R
+     */
+    R deleteDishByIds(List<Long> ids);
+
+    /**
+     * 根据id修改停售状态
+     * @param status 是否停售
+     * @param ids ids
+     * @return R
+     */
+    R updateStatusByIds(Integer status, List<Long> ids);
 }

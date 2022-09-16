@@ -68,4 +68,36 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         dish.setFlavors(list);
         return R.success(dish);
     }
+
+    @Override
+    @Transactional
+    public R deleteDishByIds(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
+
+        this.removeByIds(ids);
+
+        ids.forEach(id -> dishFlavorService.remove(Wrappers.lambdaQuery(DishFlavor.class)
+        .eq(DishFlavor::getDishId, id)));
+
+        return R.success(null);
+    }
+
+    @Override
+    @Transactional
+    public R updateStatusByIds(Integer status, List<Long> ids) {
+        if (!(ObjectUtil.isNotEmpty(status) && (status == 0 || status == 1)))
+            return R.error("参数不合法");
+
+        if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
+
+        for (Long id : ids) {
+            Dish dish = this.getById(id);
+            dish.setStatus(status);
+            if (!this.updateById(dish)) {
+                return R.error("修改失败");
+            }
+        }
+
+        return R.success(null);
+    }
 }
