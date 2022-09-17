@@ -1,5 +1,6 @@
 package com.itheima.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 public class Orders implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     private Long id;
 

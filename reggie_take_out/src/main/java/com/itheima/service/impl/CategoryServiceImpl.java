@@ -7,11 +7,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Category;
 import com.itheima.domain.Dish;
 import com.itheima.domain.Setmeal;
-import com.itheima.dto.PageDto;
 import com.itheima.mapper.CategoryMapper;
 import com.itheima.service.CategoryService;
 import com.itheima.service.DishService;
-import com.itheima.service.SetMealService;
+import com.itheima.service.SetmealService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
     @Autowired
-    private SetMealService setMealService;
+    private SetmealService setMealService;
 
     @Autowired
     private DishService dishService;

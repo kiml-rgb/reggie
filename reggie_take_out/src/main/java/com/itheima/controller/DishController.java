@@ -54,7 +54,12 @@ public class DishController {
     }
 
     @PostMapping("status/{statue}")
-    public R onStatusByIds(@PathVariable Integer statue, @RequestParam("ids") List<Long> ids) {
+    public R setStatusByIds(@PathVariable Integer statue, @RequestParam("ids") List<Long> ids) {
         return dishService.updateStatusByIds(statue, ids);
+    }
+
+    @GetMapping("list")
+    public R findDishListById(Long categoryId) {
+        return R.success(dishService.list(Wrappers.lambdaQuery(Dish.class).eq(Dish::getCategoryId, categoryId)));
     }
 }
