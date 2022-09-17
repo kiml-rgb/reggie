@@ -74,10 +74,11 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     public R deleteDishByIds(List<Long> ids) {
         if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
 
-        this.removeByIds(ids);
-
+        // 删除关联的口味
         ids.forEach(id -> dishFlavorService.remove(Wrappers.lambdaQuery(DishFlavor.class)
         .eq(DishFlavor::getDishId, id)));
+
+        this.removeByIds(ids);
 
         return R.success(null);
     }

@@ -53,13 +53,8 @@ public class DishController {
         return dishService.deleteDishByIds(ids);
     }
 
-    @PostMapping("status/1")
-    public R onStatusByIds(@RequestParam("ids") List<Long> ids) {
-        return dishService.updateStatusByIds(1, ids);
-    }
-
-    @PostMapping("status/0")
-    public R downStatusByIds(@RequestParam("ids") List<Long> ids) {
-        return dishService.updateStatusByIds(0, ids);
+    @PostMapping("status/{statue}")
+    public R onStatusByIds(@PathVariable Integer statue, @RequestParam("ids") List<Long> ids) {
+        return dishService.updateStatusByIds(statue, ids);
     }
 }

@@ -1,12 +1,11 @@
 package com.itheima.domain;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
+import org.apache.ibatis.annotations.Delete;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -73,4 +72,7 @@ public class Dish implements Serializable {
 
     @TableField(exist = false)
     private List<DishFlavor> flavors;
+
+    @TableLogic(value = "0", delval = "1")
+    private Integer isDeleted;
 }
