@@ -71,7 +71,7 @@ public class SetMealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public R deleteSetmealByIds(List<Long> ids) {
         if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
 
-        // 删除关联的口味
+        // 删除关联的菜品
         ids.forEach(id -> setmealDishService.remove(Wrappers.lambdaQuery(SetmealDish.class)
                 .eq(SetmealDish::getSetmealId, id)));
 

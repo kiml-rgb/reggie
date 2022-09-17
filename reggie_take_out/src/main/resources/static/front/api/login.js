@@ -1,10 +1,10 @@
 function loginApi(data) {
-    return $axios({
-      'url': '/user/login',
-      'method': 'post',
-      data
-    })
-  }
+  return $axios({
+    'url': '/user/login',
+    'method': 'post',
+    data
+  })
+}
 
 function loginoutApi() {
   return $axios({
@@ -13,4 +13,11 @@ function loginoutApi() {
   })
 }
 
-  
+/* 添加了发送短信的API */
+function sendMsgApi(data) {
+  return $axios({
+    'url': '/user/sendMsg',
+    'method': 'post',
+    data
+  })
+}

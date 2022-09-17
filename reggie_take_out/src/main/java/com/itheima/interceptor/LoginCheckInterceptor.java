@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.itheima.domain.Employee;
 import com.itheima.utils.EmpThreadLocal;
+import com.itheima.utils.UserThreadLocal;
 import com.itheima.vo.R;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -30,9 +31,16 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) return true;
 
         if (request.getRequestURI().contains("employee/login")) return true;
+        if (request.getRequestURI().contains("user/login")) return true;
+        if (request.getRequestURI().contains("user/sendMsg")) return true;
 
         if (ObjectUtil.isNotNull(request.getSession().getAttribute("employee"))) {
             EmpThreadLocal.set((Employee) request.getSession().getAttribute("employee"));
+            return true;
+        }
+
+        if (ObjectUtil.isNotNull(request.getSession().getAttribute("phone"))) {
+            UserThreadLocal.set((String) request.getSession().getAttribute("phone"));
             return true;
         }
 
@@ -57,6 +65,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        UserThreadLocal.remove();
         EmpThreadLocal.remove();
     }
 }
