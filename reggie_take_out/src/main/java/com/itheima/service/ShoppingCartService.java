@@ -25,4 +25,10 @@ public interface ShoppingCartService extends IService<ShoppingCart> {
      * @return R
      */
     R subShoppingCart(ShoppingCart shoppingCart);
+
+    /**
+     * 清空购物车
+     * @return R
+     */
+    R cleanShoppingCart();
 }

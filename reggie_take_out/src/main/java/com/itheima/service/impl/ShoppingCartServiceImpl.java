@@ -67,4 +67,10 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         this.updateById(one);
         return R.success(one);
     }
+
+    @Override
+    public R cleanShoppingCart() {
+        return R.success(this.remove(Wrappers.lambdaQuery(ShoppingCart.class)
+                .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId())));
+    }
 }

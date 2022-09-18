@@ -37,8 +37,7 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("clean")
-    public R deleteShoppingCart() {
-        return R.success(shoppingCartService.remove(Wrappers.lambdaQuery(ShoppingCart.class)
-        .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId())));
+    public R cleanShoppingCart() {
+        return shoppingCartService.cleanShoppingCart();
     }
 }
