@@ -52,7 +52,9 @@ public class CategoryController {
 
     @GetMapping("/list")
     public R findCategory(Integer type) {
-        if (ObjectUtil.isNull(type) || type <= 0) type = 1;
-        return R.success(categoryService.list(Wrappers.lambdaQuery(Category.class).eq(Category::getType, type)));
+        if (ObjectUtil.isNotNull(type) && type <= 0) type = 1;
+        return R.success(categoryService.list(Wrappers.lambdaQuery(Category.class)
+                .eq(ObjectUtil.isNotNull(type), Category::getType, type)
+                .orderByAsc(Category::getType)));
     }
 }

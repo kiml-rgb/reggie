@@ -59,8 +59,10 @@ public class SetmealController {
         return setmealService.updateStatusByIds(statue, ids);
     }
 
-//    @GetMapping("list")
-//    public R findSetmealListById(Long categoryId) {
-//        return R.success(setmealService.list(Wrappers.lambdaQuery(Setmeal.class).eq(Setmeal::getCategoryId, categoryId)));
-//    }
+    @GetMapping("list")
+    public R findSetmealListById(Long categoryId, Integer status) {
+        return R.success(setmealService.list(Wrappers.lambdaQuery(Setmeal.class)
+                .eq(Setmeal::getCategoryId, categoryId)
+                .eq(Setmeal::getStatus, status)));
+    }
 }

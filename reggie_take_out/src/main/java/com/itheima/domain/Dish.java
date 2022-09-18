@@ -73,6 +73,6 @@ public class Dish implements Serializable {
     @TableField(exist = false)
     private List<DishFlavor> flavors;
 
-    @TableLogic(value = "0", delval = "1")
-    private Integer isDeleted;
+//    @TableLogic(value = "0", delval = "1")
+//    private Integer isDeleted;
 }

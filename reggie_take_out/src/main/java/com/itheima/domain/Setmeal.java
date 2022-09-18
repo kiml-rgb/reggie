@@ -17,11 +17,13 @@ public class Setmeal implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 
     //分类id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
 
 
@@ -67,6 +69,6 @@ public class Setmeal implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
 
-    @TableLogic(value = "0", delval = "1")
-    private Integer isDeleted;
+//    @TableLogic(value = "0", delval = "1")
+//    private Integer isDeleted;
 }
