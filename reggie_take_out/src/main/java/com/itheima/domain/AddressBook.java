@@ -2,6 +2,9 @@ package com.itheima.domain;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,10 +17,13 @@ public class AddressBook implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 
     //用户id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
 

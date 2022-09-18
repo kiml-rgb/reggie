@@ -10,15 +10,15 @@ import com.itheima.domain.User;
  * @date 2022-09-12 14:49:07
  */
 public class UserThreadLocal {
-    private static final ThreadLocal<String> tl = new ThreadLocal<>();
+    private static final ThreadLocal<User> tl = new ThreadLocal<>();
 
     // 传递一个Employee对象，⑧对象绑定到线程
-    public static void set(String phone) {
-        tl.set(phone);
+    public static void set(User user) {
+        tl.set(user);
     }
 
     // 从当前线程上获取绑定EMP的对象
-    public static String get() {
+    public static User get() {
         return tl.get();
     }
 

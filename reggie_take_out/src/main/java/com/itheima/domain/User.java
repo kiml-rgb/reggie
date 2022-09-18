@@ -1,5 +1,7 @@
 package com.itheima.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -15,6 +17,8 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 

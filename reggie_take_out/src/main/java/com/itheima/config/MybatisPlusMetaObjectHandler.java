@@ -3,6 +3,7 @@ package com.itheima.config;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.itheima.utils.EmpThreadLocal;
+import com.itheima.utils.UserThreadLocal;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -26,17 +27,16 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
         if (metaObject.hasGetter("updateTime") && ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
         if (metaObject.hasGetter("createUser") && ObjectUtil.isNull(getFieldValByName("createUser", metaObject)))
-            setFieldValByName("createUser", EmpThreadLocal.get().getId(), metaObject);
+            setFieldValByName("createUser", ObjectUtil.isNotNull(EmpThreadLocal.get()) ? EmpThreadLocal.get().getId() : UserThreadLocal.get().getId(), metaObject);
         if (metaObject.hasGetter("updateUser") && ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
-            setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
+            setFieldValByName("updateUser", ObjectUtil.isNotNull(EmpThreadLocal.get()) ? EmpThreadLocal.get().getId() : UserThreadLocal.get().getId(), metaObject);
     }
-
 
     @Override
     public void updateFill(MetaObject metaObject) {
         if (metaObject.hasGetter("updateTime") && ObjectUtil.isNull(getFieldValByName("updateTime", metaObject)))
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
         if (metaObject.hasGetter("updateUser") && ObjectUtil.isNull(getFieldValByName("updateUser", metaObject)))
-            setFieldValByName("updateUser", EmpThreadLocal.get().getId(), metaObject);
+            setFieldValByName("updateUser", ObjectUtil.isNotNull(EmpThreadLocal.get()) ? EmpThreadLocal.get().getId() : UserThreadLocal.get().getId(), metaObject);
     }
 }

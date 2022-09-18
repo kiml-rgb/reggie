@@ -1,6 +1,7 @@
 package com.itheima.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.domain.Category;
@@ -51,7 +52,7 @@ public class CategoryController {
 
     @GetMapping("/list")
     public R findCategory(Integer type) {
-        if (type <= 0) type = 1;
+        if (ObjectUtil.isNull(type) || type <= 0) type = 1;
         return R.success(categoryService.list(Wrappers.lambdaQuery(Category.class).eq(Category::getType, type)));
     }
 }

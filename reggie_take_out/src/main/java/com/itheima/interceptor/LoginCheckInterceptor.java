@@ -4,6 +4,7 @@ import cn.hutool.core.text.AntPathMatcher;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.itheima.domain.Employee;
+import com.itheima.domain.User;
 import com.itheima.utils.EmpThreadLocal;
 import com.itheima.utils.UserThreadLocal;
 import com.itheima.vo.R;
@@ -39,8 +40,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if (ObjectUtil.isNotNull(request.getSession().getAttribute("phone"))) {
-            UserThreadLocal.set((String) request.getSession().getAttribute("phone"));
+        if (ObjectUtil.isNotNull(request.getSession().getAttribute("user"))) {
+            UserThreadLocal.set((User) request.getSession().getAttribute("user"));
             return true;
         }
 
