@@ -22,6 +22,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!PhoneUtil.isMobile(phone)) return R.error("手机号码不合法");
         // 生成6位验证码
         String code = RandomUtil.randomNumbers(6);
+        code = "1";
         System.out.println("code = " + code);
         return R.success(code);
     }

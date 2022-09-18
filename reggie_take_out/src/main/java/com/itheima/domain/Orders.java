@@ -1,10 +1,13 @@
 package com.itheima.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 订单
@@ -14,7 +17,7 @@ public class Orders implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     //订单号
@@ -25,9 +28,11 @@ public class Orders implements Serializable {
 
 
     //下单用户id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     //地址id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long addressBookId;
 
 
@@ -60,4 +65,7 @@ public class Orders implements Serializable {
 
     //收货人
     private String consignee;
+
+    @TableField(exist = false)
+    private List<OrderDetail> orderDetails;
 }

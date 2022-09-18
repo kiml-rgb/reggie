@@ -2,6 +2,8 @@ package com.itheima.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,20 +17,24 @@ public class OrderDetail implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     //名称
     private String name;
 
     //订单id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long orderId;
 
 
     //菜品id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long dishId;
 
 
     //套餐id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long setmealId;
 
 

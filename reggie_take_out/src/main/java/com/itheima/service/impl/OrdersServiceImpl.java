@@ -4,11 +4,13 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.AddressBook;
 import com.itheima.domain.OrderDetail;
 import com.itheima.domain.Orders;
 import com.itheima.domain.ShoppingCart;
+import com.itheima.dto.PageDto;
 import com.itheima.mapper.OrdersMapper;
 import com.itheima.service.AddressBookService;
 import com.itheima.service.OrderDetailService;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zyf
@@ -41,7 +44,6 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private OrderDetailService orderDetailService;
 
     @Autowired
-
     private AddressBookService addressBookService;
 
     @Override
@@ -78,9 +80,10 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orders.setUserName(UserThreadLocal.get().getName());
         orders.setConsignee(addressBook.getConsignee());
 
+        // 订单保存
         this.save(orders);
 
-        // 订单明细
+        // 添加订单明细
         ArrayList<OrderDetail> orderDetails = new ArrayList<>();
         for (ShoppingCart shoppingCart : list) {
             OrderDetail detail = new OrderDetail();
@@ -95,5 +98,39 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         shoppingCartService.remove(Wrappers.lambdaQuery(ShoppingCart.class)
                 .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId()));
         return R.success(orders);
+    }
+
+    @Override
+    public R getOrderByPage(PageDto pageDto) {
+        Page<Orders> pages = this.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
+                Wrappers.lambdaQuery(Orders.class));
+
+        List<Orders> orders = pages.getRecords();
+        for (Orders order : orders) {
+            // 获取订单明细
+            List<OrderDetail> details = orderDetailService.list(Wrappers.lambdaQuery(OrderDetail.class).eq(OrderDetail::getOrderId, order.getId()));
+            order.setOrderDetails(details);
+        }
+
+        // 修改返回数据
+        pages.setRecords(orders);
+
+        return R.success(pages);
+    }
+
+    @Override
+    public R getOrderAgain(Map<String, String> param) {
+        String id = param.get("id");
+        if (ObjectUtil.isEmpty(id)) return R.error("参数不合法");
+
+        List<OrderDetail> list = orderDetailService.list(Wrappers.lambdaQuery(OrderDetail.class).eq(OrderDetail::getOrderId, id));
+        for (OrderDetail orderDetail : list) {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, shoppingCart, "id");
+            shoppingCart.setUserId(UserThreadLocal.get().getId());
+            shoppingCartService.save(shoppingCart);
+        }
+
+        return R.success(null);
     }
 }
