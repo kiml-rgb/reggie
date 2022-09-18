@@ -7,10 +7,7 @@ import com.itheima.service.ShoppingCartService;
 import com.itheima.utils.UserThreadLocal;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author zyf
@@ -30,7 +27,18 @@ public class ShoppingCartController {
     }
 
     @PostMapping("add")
-    public R addShoppingCart() {
-        return null;
+    public R addShoppingCart(@RequestBody ShoppingCart shoppingCart) {
+        return shoppingCartService.addShoppingCart(shoppingCart);
+    }
+
+    @PostMapping("sub")
+    public R subShoppingCart(@RequestBody ShoppingCart shoppingCart) {
+        return shoppingCartService.subShoppingCart(shoppingCart);
+    }
+
+    @DeleteMapping("clean")
+    public R deleteShoppingCart() {
+        return R.success(shoppingCartService.remove(Wrappers.lambdaQuery(ShoppingCart.class)
+        .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId())));
     }
 }

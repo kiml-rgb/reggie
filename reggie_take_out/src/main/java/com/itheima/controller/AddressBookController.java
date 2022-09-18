@@ -39,6 +39,13 @@ public class AddressBookController {
         return addressBookService.setDefaultAddressBook(param);
     }
 
+    @GetMapping("default")
+    public R getDefaultAddressBook() {
+        return R.success(addressBookService.getOne(Wrappers.lambdaQuery(AddressBook.class)
+        .eq(AddressBook::getUserId, UserThreadLocal.get().getId())
+        .eq(AddressBook::getIsDefault, 1)));
+    }
+
     @GetMapping("{id}")
     public R getAddressBookById(@PathVariable Long id) {
         return R.success(addressBookService.getById(id));

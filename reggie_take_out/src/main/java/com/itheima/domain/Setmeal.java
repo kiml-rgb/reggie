@@ -51,8 +51,7 @@ public class Setmeal implements Serializable {
     private String image;
 
 
-    @TableField(exist = false)
-    private List<SetmealDish> setmealDishes;
+
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
@@ -68,6 +67,13 @@ public class Setmeal implements Serializable {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
+
+
+    @TableField(exist = false)
+    private List<SetmealDish> setmealDishes;
+
+    @TableField(exist = false)
+    private String categoryName;
 
 //    @TableLogic(value = "0", delval = "1")
 //    private Integer isDeleted;
