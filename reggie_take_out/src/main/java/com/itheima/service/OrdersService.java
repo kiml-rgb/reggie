@@ -26,7 +26,7 @@ public interface OrdersService extends IService<Orders> {
      * @param pageDto pageDto
      * @return R
      */
-    R getOrderByPage(PageDto pageDto);
+    R getUserOrderByPage(PageDto pageDto);
 
     /**
      * 再来一单
@@ -34,4 +34,12 @@ public interface OrdersService extends IService<Orders> {
      * @return R
      */
     R getOrderAgain(Map<String, String> orders);
+
+
+    /**
+     * 后台分页查询订单
+     * @param params
+     * @return
+     */
+    R getOrderByPage(Map<String, Object> params);
 }

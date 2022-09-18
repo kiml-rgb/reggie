@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.itheima.domain.AddressBook;
 import com.itheima.service.AddressBookService;
@@ -31,7 +32,7 @@ public class AddressBookController {
 
     @GetMapping("list")
     public R listAddressBook() {
-        return R.success(addressBookService.list(Wrappers.lambdaQuery(AddressBook.class).eq(AddressBook::getUserId, UserThreadLocal.get().getId())));
+        return R.success(addressBookService.list(Wrappers.lambdaQuery(AddressBook.class).eq(ObjectUtil.isNotNull(UserThreadLocal.get().getId()), AddressBook::getUserId, UserThreadLocal.get().getId())));
     }
 
     @PutMapping("default")

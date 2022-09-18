@@ -1,5 +1,6 @@
 package com.itheima.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author zyf
@@ -101,7 +103,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
-    public R getOrderByPage(PageDto pageDto) {
+    public R getUserOrderByPage(PageDto pageDto) {
         Page<Orders> pages = this.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
                 Wrappers.lambdaQuery(Orders.class));
 
@@ -132,5 +134,24 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         }
 
         return R.success(null);
+    }
+
+    @Override
+    public R getOrderByPage(Map<String, Object> params) {
+        Integer page = Convert.convert(Integer.class, params.get("page"));
+        Integer pageSize = Convert.convert(Integer.class, params.get("pageSize"));
+        Long number = Convert.convert(Long.class, params.get("number"));
+        LocalDateTime beginTime = Convert.convert(LocalDateTime.class, params.get("beginTime"));
+        LocalDateTime endTime = Convert.convert(LocalDateTime.class, params.get("endTime"));
+
+        if (ObjectUtil.hasEmpty(page, pageSize)) return R.error("参数不合法");
+
+        Page<Orders> ordersPage = this.page(new Page<>(page, pageSize),
+                Wrappers.lambdaQuery(Orders.class)
+                        .like(ObjectUtil.isNotNull(number), Orders::getId, number)
+                        .between(ObjectUtil.isAllNotEmpty(beginTime, endTime), Orders::getOrderTime, beginTime, endTime));
+        List<Orders> records = ordersPage.getRecords();
+
+        return R.success(ordersPage);
     }
 }
