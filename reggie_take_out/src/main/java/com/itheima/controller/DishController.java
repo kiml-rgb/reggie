@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.domain.Dish;
 import com.itheima.domain.DishFlavor;
 import com.itheima.dto.PageDto;
+import com.itheima.service.CategoryService;
 import com.itheima.service.DishFlavorService;
 import com.itheima.service.DishService;
 import com.itheima.vo.R;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author zyf
@@ -28,6 +30,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private DishFlavorService dishFlavorService;
+    @Autowired
+    private CategoryService categoryService;
 
     @PostMapping
     public R saveDish(@RequestBody Dish dish) throws IOException {
@@ -37,9 +41,19 @@ public class DishController {
     @GetMapping("page")
     public R findEmployeeByPage(PageDto pageDto) {
         pageDto.check();
-        return R.success(dishService.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
+
+        Page<Dish> page = dishService.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
                 Wrappers.lambdaQuery(Dish.class)
-                        .like(StrUtil.isNotEmpty(pageDto.getName()), Dish::getName, pageDto.getName())));
+                        .like(StrUtil.isNotEmpty(pageDto.getName()), Dish::getName, pageDto.getName()));
+
+        // 增加菜品名称
+        List<Dish> dishList = page.getRecords().stream()
+                .peek(dish -> dish.setCategoryName(categoryService.getById(dish.getCategoryId()).getName()))
+                .collect(Collectors.toList());
+
+        page.setRecords(dishList);
+
+        return R.success(page);
     }
 
     @GetMapping("{id}")

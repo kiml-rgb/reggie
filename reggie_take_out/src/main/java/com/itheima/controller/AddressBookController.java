@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,8 @@ public class AddressBookController {
     }
 
     @GetMapping("list")
-    public R listAddressBook() {
+    public R listAddressBook(HttpSession session) {
+        session.getAttribute("user");
         return R.success(addressBookService.list(Wrappers.lambdaQuery(AddressBook.class).eq(ObjectUtil.isNotNull(UserThreadLocal.get().getId()), AddressBook::getUserId, UserThreadLocal.get().getId())));
     }
 

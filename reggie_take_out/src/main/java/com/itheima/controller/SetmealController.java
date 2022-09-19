@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.domain.Dish;
 import com.itheima.domain.Setmeal;
 import com.itheima.dto.PageDto;
+import com.itheima.service.CategoryService;
 import com.itheima.service.SetmealService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author zyf
@@ -26,6 +28,9 @@ public class SetmealController {
     @Autowired
     private SetmealService setmealService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @PostMapping
     public R saveSetmeal(@RequestBody Setmeal setmeal) throws IOException {
         return setmealService.saveSetmeal(setmeal);
@@ -34,9 +39,18 @@ public class SetmealController {
     @GetMapping("page")
     public R findSetmealByPage(PageDto pageDto) {
         pageDto.check();
-        return R.success(setmealService.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
+        Page<Setmeal> page = setmealService.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
                 Wrappers.lambdaQuery(Setmeal.class)
-                        .like(StrUtil.isNotEmpty(pageDto.getName()), Setmeal::getName, pageDto.getName())));
+                        .like(StrUtil.isNotEmpty(pageDto.getName()), Setmeal::getName, pageDto.getName()));
+
+        // 增加套餐分类
+        List<Setmeal> setmealList = page.getRecords().stream()
+                .peek(setmeal -> setmeal.setCategoryName(categoryService.getById(setmeal.getCategoryId()).getName()))
+                .collect(Collectors.toList());
+
+        page.setRecords(setmealList);
+
+        return R.success(page);
     }
 
     @GetMapping("{id}")
