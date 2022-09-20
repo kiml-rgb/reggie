@@ -125,6 +125,10 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         String id = param.get("id");
         if (ObjectUtil.isEmpty(id)) return R.error("参数不合法");
 
+        // 清空原有的购物车
+        shoppingCartService.remove(Wrappers.lambdaQuery(ShoppingCart.class)
+                .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId()));
+
         List<OrderDetail> list = orderDetailService.list(Wrappers.lambdaQuery(OrderDetail.class).eq(OrderDetail::getOrderId, id));
         for (OrderDetail orderDetail : list) {
             ShoppingCart shoppingCart = new ShoppingCart();
@@ -150,7 +154,6 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
                 Wrappers.lambdaQuery(Orders.class)
                         .like(ObjectUtil.isNotNull(number), Orders::getId, number)
                         .between(ObjectUtil.isAllNotEmpty(beginTime, endTime), Orders::getOrderTime, beginTime, endTime));
-        List<Orders> records = ordersPage.getRecords();
 
         return R.success(ordersPage);
     }

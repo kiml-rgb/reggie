@@ -29,7 +29,7 @@ public interface EmpService extends IService<Employee> {
 
     /**
      * 分页查询
-     * @param empPageDto
+     * @param empPageDto empPageDto
      * @return R
      */
     R findEmployeeByPage(PageDto empPageDto);
