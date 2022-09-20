@@ -19,6 +19,7 @@ public class MVCConfig implements WebMvcConfigurer{
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 注册拦截器， 对登录进行拦截，指定要拦截的请求（/**）
         registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**");
     }
 }
