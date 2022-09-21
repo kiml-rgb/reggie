@@ -1,6 +1,7 @@
 package com.itheima.controller;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.itheima.anno.NoAuth;
 import com.itheima.domain.Employee;
 import com.itheima.dto.PageDto;
 import com.itheima.service.EmpService;
@@ -32,6 +33,7 @@ public class EmpController {
      * @return
      */
     @PostMapping("/login")
+    @NoAuth
     public R login(@RequestBody Employee employee, HttpSession session) {
         R loginR = empService.login(employee);
         if (ObjectUtil.isNotNull(loginR.getData())) session.setAttribute("employee", loginR.getData());

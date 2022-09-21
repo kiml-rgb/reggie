@@ -77,6 +77,6 @@ public class Dish implements Serializable {
     @TableField(exist = false)
     private String categoryName;
 
-//    @TableLogic(value = "0", delval = "1")
-//    private Integer isDeleted;
+    @TableLogic(value = "0", delval = "1")
+    private Integer isDeleted;
 }

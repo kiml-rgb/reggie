@@ -1,8 +1,8 @@
 package com.itheima.interceptor;
 
-import cn.hutool.core.text.AntPathMatcher;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
+import com.itheima.anno.NoAuth;
 import com.itheima.domain.Employee;
 import com.itheima.domain.User;
 import com.itheima.utils.EmpThreadLocal;
@@ -31,9 +31,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (!(handler instanceof HandlerMethod)) return true;
 
-        if (request.getRequestURI().contains("employee/login")) return true;
+//        (HandlerMethod) handler)
+        /*if (request.getRequestURI().contains("employee/login")) return true;
         if (request.getRequestURI().contains("user/login")) return true;
-        if (request.getRequestURI().contains("user/sendMsg")) return true;
+        if (request.getRequestURI().contains("user/sendMsg")) return true;*/
+
+        if (((HandlerMethod) handler).hasMethodAnnotation(NoAuth.class)) return true;
 
         if (ObjectUtil.isNotNull(request.getSession().getAttribute("employee"))) {
             EmpThreadLocal.set((Employee) request.getSession().getAttribute("employee"));

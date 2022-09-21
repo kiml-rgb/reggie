@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.itheima.domain.User;
 import com.itheima.vo.R;
 
+import java.util.Map;
+
 /**
  * @author zyf
  * @program: reggie_take_out
@@ -18,4 +20,10 @@ public interface UserService extends IService<User> {
      */
     R sendMsg(String phone);
 
+    /**
+     * 用户登陆
+     * @param phoneMap phoneMap
+     * @return R
+     */
+    R login(Map<String, String> phoneMap);
 }
