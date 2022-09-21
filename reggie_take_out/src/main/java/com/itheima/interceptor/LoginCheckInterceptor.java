@@ -28,10 +28,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 判断本次请求是否需要拦截
-
         if (!(handler instanceof HandlerMethod)) return true;
 
-//        (HandlerMethod) handler)
         /*if (request.getRequestURI().contains("employee/login")) return true;
         if (request.getRequestURI().contains("user/login")) return true;
         if (request.getRequestURI().contains("user/sendMsg")) return true;*/

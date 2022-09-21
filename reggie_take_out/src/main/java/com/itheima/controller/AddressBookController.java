@@ -32,9 +32,8 @@ public class AddressBookController {
     }
 
     @GetMapping("list")
-    public R listAddressBook(HttpSession session) {
-        session.getAttribute("user");
-        return R.success(addressBookService.list(Wrappers.lambdaQuery(AddressBook.class).eq(ObjectUtil.isNotNull(UserThreadLocal.get().getId()), AddressBook::getUserId, UserThreadLocal.get().getId())));
+    public R listAddressBook() {
+        return addressBookService.listAddressBook();
     }
 
     @PutMapping("default")

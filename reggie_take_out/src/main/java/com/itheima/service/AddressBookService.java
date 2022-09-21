@@ -32,4 +32,9 @@ public interface AddressBookService extends IService<AddressBook> {
      * @return
      */
     R updateAddressBook(AddressBook addressBook);
+
+    /**
+     * @return R
+     */
+    R listAddressBook();
 }
