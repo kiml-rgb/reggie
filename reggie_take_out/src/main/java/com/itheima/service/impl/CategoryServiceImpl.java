@@ -48,7 +48,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         if (this.save(category)) {
             // 删除redis中的缓存
-            // redisTemplate.delete("reggie_category_categorylist_" + category.getType());
+            redisTemplate.delete("reggie_category_categorylist_" + category.getType());
             return R.success(null);
         }
 
@@ -67,7 +67,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         Category category = this.getById(id);
         if (this.removeById(id)) {
             // 删除redis中的缓存
-            // redisTemplate.delete("reggie_category_categorylist_" + category.getType());
+            redisTemplate.delete(redisTemplate.keys("reggie_category_categorylist_" + category.getType()));
             return R.success(null);
         }
         return R.error("删除失败，请稍后重试");
@@ -86,7 +86,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         if (this.updateById(category)) {
             // 删除redis中的缓存
-            // redisTemplate.delete("reggie_category_categorylist_" + category.getType());
+            redisTemplate.delete(redisTemplate.keys("reggie_category_categorylist_*"));
             return R.success(null);
         }
         return R.error("更新失败,请稍后重试");
@@ -98,19 +98,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (ObjectUtil.isNotNull(type) && type <= 0) type = 1;
 
         // Redis中已经缓存，直接返回
-        // String jsonList = redisTemplate.opsForValue().get("reggie_category_categorylist_" + type);
-        // List<Category> categories = JSONUtil.toList(jsonList, Category.class);
-        // if (CollUtil.isNotEmpty(categories)) return R.success(categories);
+        String jsonList = redisTemplate.opsForValue().get("reggie_category_categorylist_" + type);
+        List<Category> categories = JSONUtil.toList(jsonList, Category.class);
+        if (CollUtil.isNotEmpty(categories)) return R.success(categories);
 
         List<Category> list = this.list(Wrappers.lambdaQuery(Category.class)
                 .eq(ObjectUtil.isNotNull(type), Category::getType, type)
-                .orderByAsc(Category::getType));
+                .orderByAsc(Category::getType)
+                .orderByAsc(Category::getSort));
 
         // 把菜单存入redis
-        // if (CollUtil.isNotEmpty(list))
-        //     redisTemplate.opsForValue().set("reggie_category_categorylist_" + type,
-        //             JSONUtil.toJsonStr(list),
-        //             30, TimeUnit.DAYS);
+        if (CollUtil.isNotEmpty(list))
+            redisTemplate.opsForValue().set("reggie_category_categorylist_" + type,
+                    JSONUtil.toJsonStr(list),
+                    30, TimeUnit.DAYS);
 
         return R.success(list);
     }

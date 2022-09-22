@@ -74,9 +74,7 @@ public class SetmealController {
     }
 
     @GetMapping("list")
-    public R findSetmealListById(Long categoryId, Integer status) {
-        return R.success(setmealService.list(Wrappers.lambdaQuery(Setmeal.class)
-                .eq(Setmeal::getCategoryId, categoryId)
-                .eq(Setmeal::getStatus, status)));
+    public R findSetmealList(Long categoryId, Integer status) {
+        return setmealService.findSetmealList(categoryId, status);
     }
 }

@@ -2,8 +2,10 @@ package com.itheima.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.itheima.domain.Dish;
 import com.itheima.domain.Setmeal;
 import com.itheima.domain.SetmealDish;
 import com.itheima.mapper.SetmealMapper;
@@ -11,10 +13,12 @@ import com.itheima.service.SetmealDishService;
 import com.itheima.service.SetmealService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zyf
@@ -26,6 +30,9 @@ import java.util.List;
 public class SetMealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {
     @Autowired
     private SetmealDishService setmealDishService;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
@@ -71,6 +78,9 @@ public class SetMealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public R deleteSetmealByIds(List<Long> ids) {
         if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
 
+        // 删除套餐
+        this.listByIds(ids).forEach(setmeal -> redisTemplate.delete("reggie_setmeal_categoryId_" + setmeal.getCategoryId()));
+
         // 删除关联的菜品
         ids.forEach(id -> setmealDishService.remove(Wrappers.lambdaQuery(SetmealDish.class)
                 .eq(SetmealDish::getSetmealId, id)));
@@ -91,11 +101,30 @@ public class SetMealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         for (Long id : ids) {
             Setmeal setmeal = this.getById(id);
             setmeal.setStatus(status);
-            if (!this.updateById(setmeal)) {
-                return R.error("修改失败");
-            }
+            redisTemplate.delete("reggie_setmeal_categoryId_" + setmeal.getCategoryId());
         }
 
         return R.success(null);
+    }
+
+    @Override
+    public R findSetmealList(Long categoryId, Integer status) {
+        if (ObjectUtil.hasEmpty(categoryId, status)) return R.error("参数不合法");
+
+        // 从缓存中查找list
+        String jsonList = redisTemplate.opsForValue().get("reggie_setmeal_categoryId_" + categoryId);
+        if (ObjectUtil.isNotEmpty(jsonList)) return R.success(JSONUtil.toList(jsonList, Setmeal.class));
+
+        List<Setmeal> list = this.list(Wrappers.lambdaQuery(Setmeal.class)
+                .eq(Setmeal::getCategoryId, categoryId)
+                .eq(Setmeal::getStatus, status));
+        list.forEach(setmeal -> setmeal.setSetmealDishes(setmealDishService.list(Wrappers.lambdaQuery(SetmealDish.class)
+                .eq(SetmealDish::getSetmealId, setmeal.getId()))));
+
+        redisTemplate.opsForValue().set("reggie_setmeal_categoryId_" + categoryId,
+                JSONUtil.toJsonStr(list),
+                30, TimeUnit.DAYS);
+
+        return R.success(list);
     }
 }

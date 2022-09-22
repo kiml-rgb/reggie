@@ -1,8 +1,10 @@
 package com.itheima.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,8 +21,10 @@ import com.itheima.service.OrdersService;
 import com.itheima.service.ShoppingCartService;
 import com.itheima.utils.UserThreadLocal;
 import com.itheima.vo.R;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zyf
@@ -46,6 +51,9 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
     @Autowired
     private AddressBookService addressBookService;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
@@ -95,6 +103,8 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
         orderDetailService.saveBatch(orderDetails);
 
+        redisTemplate.delete("reggie_orders_uid_" + UserThreadLocal.get().getId());
+
         // 清空购物车
         shoppingCartService.remove(Wrappers.lambdaQuery(ShoppingCart.class)
                 .eq(ShoppingCart::getUserId, UserThreadLocal.get().getId()));
@@ -102,9 +112,18 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
-    public R getUserOrderByPage(PageDto pageDto) {
+    public R getUserOrderByPage(PageDto pageDto){
+        pageDto.check();
+
+        // 加入缓存
+        // String jsonList = redisTemplate.opsForValue().get("reggie_orders_uid_" + UserThreadLocal.get().getId());
+        // List<Orders> list = JSONUtil.toList(jsonList, Orders.class);
+        // if (CollUtil.isNotEmpty(list)) return R.success(new Page<Orders>(pageDto.getPage(), pageDto.getPageSize()).setRecords(list));
+
         Page<Orders> pages = this.page(new Page<>(pageDto.getPage(), pageDto.getPageSize()),
-                Wrappers.lambdaQuery(Orders.class));
+                Wrappers.lambdaQuery(Orders.class)
+                        .eq(Orders::getUserId, UserThreadLocal.get().getId())
+                        .orderByDesc(Orders::getOrderTime));
 
         List<Orders> orders = pages.getRecords();
         for (Orders order : orders) {
@@ -113,9 +132,11 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
             order.setOrderDetails(details);
         }
 
-        // 修改返回数据
         pages.setRecords(orders);
-
+        // redisTemplate.opsForValue().set("reggie_orders_uid_" + UserThreadLocal.get().getId(),
+        //         JSONUtil.toJsonStr(orders),
+        //         30, TimeUnit.DAYS);
+        
         return R.success(pages);
     }
 

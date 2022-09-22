@@ -41,4 +41,12 @@ public interface SetmealService extends IService<Setmeal> {
      * @return R
      */
     R updateStatusByIds(Integer statue, List<Long> ids);
+
+    /**
+     * 前台查找套餐
+     * @param categoryId
+     * @param status
+     * @return
+     */
+    R findSetmealList(Long categoryId, Integer status);
 }
