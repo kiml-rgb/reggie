@@ -2,6 +2,8 @@ package com.itheima.service.impl;
 
 import cn.hutool.core.util.*;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,8 +11,14 @@ import com.itheima.domain.Employee;
 import com.itheima.dto.PageDto;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.service.EmpService;
+import com.itheima.utils.EmpThreadLocal;
 import com.itheima.vo.R;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zyf
@@ -20,6 +28,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements EmpService {
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 员工登陆业务
      *
@@ -49,6 +60,12 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         // 判断账户是否可用
         if (one.getStatus() == 0) return R.error("该账户已被禁用");
 
+        // 登陆成功,存入redis
+        // ToDo：照理说,这里应该加入token
+        redisTemplate.opsForValue().set(
+                "reggie_emp_login_" + one.getUsername(), JSONUtil.toJsonStr(one),
+                60 * 2, TimeUnit.MINUTES);
+
         // 返回登陆成功数据
         return R.success(one);
     }
@@ -75,6 +92,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         if (this.save(employee)) {
             return R.builder().code(1).msg("添加成功").data("添加成功").build();
         }
+
 
         return R.error("添加失败，请稍后重试");
     }
@@ -112,7 +130,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
 
         } else {
             // 判断传入的参数是否合法
-            if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId())) return R.error("参数不合法");
+            if (ObjectUtil.isNull(employee) || ObjectUtil.hasEmpty(employee.getStatus(), employee.getId()))
+                return R.error("参数不合法");
         }
 
         if (this.updateById(employee)) {
@@ -120,6 +139,15 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Employee> implements 
         }
 
         return R.error("更新失败，请稍后重试");
+    }
+
+    @Override
+    public R logout() {
+        // 退出登陆,清空session
+        redisTemplate.delete(
+                "reggie_emp_login_" + EmpThreadLocal.get().getUsername());
+
+        return R.success("登出成功");
     }
 
 

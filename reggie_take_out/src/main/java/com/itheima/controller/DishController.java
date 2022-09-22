@@ -78,13 +78,6 @@ public class DishController {
 
     @GetMapping("list")
     public R findDishListById(Long categoryId, Integer status) {
-        List<Dish> list = dishService.list(Wrappers.lambdaQuery(Dish.class)
-                .eq(Dish::getCategoryId, categoryId)
-                .eq(Dish::getStatus, status));
-        list.forEach(dish -> {
-            List<DishFlavor> flavors = dishFlavorService.list(Wrappers.lambdaQuery(DishFlavor.class).eq(DishFlavor::getDishId, dish.getId()));
-            dish.setFlavors(flavors);
-        });
-        return R.success(list);
+        return dishService.findDishList(categoryId, status);
     }
 }

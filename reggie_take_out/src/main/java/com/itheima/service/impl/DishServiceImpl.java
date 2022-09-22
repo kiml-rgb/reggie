@@ -2,6 +2,7 @@ package com.itheima.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.Dish;
@@ -11,10 +12,12 @@ import com.itheima.service.DishFlavorService;
 import com.itheima.service.DishService;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author zyf
@@ -27,6 +30,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     @Autowired
     private DishFlavorService dishFlavorService;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
@@ -54,6 +60,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             dishFlavorService.save(flavor);
         }
 
+        redisTemplate.delete("reggie_dish_categoryId_" + dish.getCategoryId());
+
         return R.success("菜品新增成功");
     }
 
@@ -72,9 +80,12 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     public R deleteDishByIds(List<Long> ids) {
         if (CollUtil.isEmpty(ids)) return R.error("参数不合法");
 
+        // 删除缓存
+        this.listByIds(ids).forEach(dish -> redisTemplate.delete("reggie_dish_categoryId_" + dish.getCategoryId()));
+
         // 删除关联的口味
         ids.forEach(id -> dishFlavorService.remove(Wrappers.lambdaQuery(DishFlavor.class)
-        .eq(DishFlavor::getDishId, id)));
+                .eq(DishFlavor::getDishId, id)));
 
         this.removeByIds(ids);
 
@@ -97,6 +108,30 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             }
         }
 
+        // 删除所有缓存
+        redisTemplate.delete(redisTemplate.keys("reggie_dish_categoryId_*"));
+
         return R.success(null);
+    }
+
+    @Override
+    public R findDishList(Long categoryId, Integer status) {
+        if (ObjectUtil.hasEmpty(categoryId, status)) return R.error("参数不合法");
+
+        // 从缓存中查找list
+        String jsonList = redisTemplate.opsForValue().get("reggie_dish_categoryId_" + categoryId);
+        if (ObjectUtil.isNotEmpty(jsonList)) return R.success(JSONUtil.toList(jsonList, Dish.class));
+
+        List<Dish> list = this.list(Wrappers.lambdaQuery(Dish.class)
+                .eq(Dish::getCategoryId, categoryId)
+                .eq(Dish::getStatus, status));
+        list.forEach(dish -> {
+            List<DishFlavor> flavors = dishFlavorService.list(Wrappers.lambdaQuery(DishFlavor.class).eq(DishFlavor::getDishId, dish.getId()));
+            dish.setFlavors(flavors);
+        });
+
+        // 存入缓存
+        redisTemplate.opsForValue().set("reggie_dish_categoryId_" + categoryId, JSONUtil.toJsonStr(list));
+        return R.success(list);
     }
 }

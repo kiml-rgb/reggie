@@ -33,4 +33,18 @@ public interface CategoryService extends IService<Category> {
      * @return R
      */
     R updateCategory(Category category);
+
+    /**
+     * 根据类型查找菜单
+     * @param type type
+     * @return R
+     */
+    R findCategory(Integer type);
+
+    /**
+     * 分页查询菜单
+     * @param pageDto pageDto
+     * @return
+     */
+    R findCategoryByPage(PageDto pageDto);
 }

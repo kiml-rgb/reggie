@@ -49,8 +49,8 @@ public class EmpController {
     @PostMapping("/logout")
     public R logout(HttpSession session) {
         // 销毁session
-        session.invalidate();
-        return R.success(null);
+        if ((empService.logout().getCode() == 1)) session.invalidate();
+        return R.success("登出成功");
     }
 
     /**

@@ -41,4 +41,9 @@ public interface EmpService extends IService<Employee> {
      * @return R
      */
     R updateStatusEmployee(Employee employee, String string);
+
+    /**
+     * 登出
+     */
+    R logout();
 }

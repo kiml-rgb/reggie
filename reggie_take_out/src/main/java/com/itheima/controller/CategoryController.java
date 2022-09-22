@@ -11,6 +11,8 @@ import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * @author zyf
@@ -31,8 +33,7 @@ public class CategoryController {
 
     @GetMapping("/page")
     public R findCategoryByPage(PageDto pageDto) {
-        pageDto.check();
-        return R.success(categoryService.page(new Page<>(pageDto.getPage(), pageDto.getPageSize())));
+        return categoryService.findCategoryByPage(pageDto);
     }
 
     @DeleteMapping
@@ -52,9 +53,6 @@ public class CategoryController {
 
     @GetMapping("/list")
     public R findCategory(Integer type) {
-        if (ObjectUtil.isNotNull(type) && type <= 0) type = 1;
-        return R.success(categoryService.list(Wrappers.lambdaQuery(Category.class)
-                .eq(ObjectUtil.isNotNull(type), Category::getType, type)
-                .orderByAsc(Category::getType)));
+        return categoryService.findCategory(type);
     }
 }

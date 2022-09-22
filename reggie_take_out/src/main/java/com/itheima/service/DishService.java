@@ -42,4 +42,12 @@ public interface DishService extends IService<Dish> {
      * @return R
      */
     R updateStatusByIds(Integer status, List<Long> ids);
+
+    /**
+     * 前台查找菜品
+     * @param categoryId categoryId
+     * @param status status
+     * @return R
+     */
+    R findDishList(Long categoryId, Integer status);
 }
