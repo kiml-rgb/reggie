@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author zyf
@@ -116,15 +118,20 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     @Override
     public R findDishList(Long categoryId, Integer status) {
-        if (ObjectUtil.hasEmpty(categoryId, status)) return R.error("参数不合法");
+        if (ObjectUtil.isEmpty(categoryId)) return R.error("参数不合法");
 
         // 从缓存中查找list
         String jsonList = redisTemplate.opsForValue().get("reggie_dish_categoryId_" + categoryId);
-        if (ObjectUtil.isNotEmpty(jsonList)) return R.success(JSONUtil.toList(jsonList, Dish.class));
+        List<Dish> dishList = JSONUtil.toList(jsonList, Dish.class);
+        if (CollUtil.isNotEmpty(dishList)) return R.success(
+                ObjectUtil.isNotNull(status) ? dishList
+                        // 状态不为空 添加过滤条件
+                        .stream().filter(dish -> ObjectUtil.isNotNull(status) && dish.getStatus().equals(status))
+                        .collect(Collectors.toList()) : dishList);
 
         List<Dish> list = this.list(Wrappers.lambdaQuery(Dish.class)
                 .eq(Dish::getCategoryId, categoryId)
-                .eq(Dish::getStatus, status));
+                .eq(ObjectUtil.isNotNull(status), Dish::getStatus, status));
         list.forEach(dish -> {
             List<DishFlavor> flavors = dishFlavorService.list(Wrappers.lambdaQuery(DishFlavor.class).eq(DishFlavor::getDishId, dish.getId()));
             dish.setFlavors(flavors);

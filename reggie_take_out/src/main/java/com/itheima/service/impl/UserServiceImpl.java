@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.domain.User;
 import com.itheima.mapper.UserMapper;
 import com.itheima.service.UserService;
+import com.itheima.utils.UserThreadLocal;
 import com.itheima.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

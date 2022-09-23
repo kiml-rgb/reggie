@@ -36,13 +36,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (((HandlerMethod) handler).hasMethodAnnotation(NoAuth.class)) return true;
 
-        if (ObjectUtil.isNotNull(request.getSession().getAttribute("employee"))) {
-            EmpThreadLocal.set((Employee) request.getSession().getAttribute("employee"));
-            return true;
-        }
-
-        if (ObjectUtil.isNotNull(request.getSession().getAttribute("user"))) {
-            UserThreadLocal.set((User) request.getSession().getAttribute("user"));
+        boolean employee = ObjectUtil.isNotNull(request.getSession().getAttribute("employee"));
+        boolean user = ObjectUtil.isNotNull(request.getSession().getAttribute("user"));
+        if (employee || user) {
+            if (employee) EmpThreadLocal.set((Employee) request.getSession().getAttribute("employee"));
+            if (user) UserThreadLocal.set((User) request.getSession().getAttribute("user"));
             return true;
         }
 
@@ -59,9 +57,10 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     /**
      * 请求回到浏览器之前执行
-     * @param request request
-     * @param response response
-     * @param handler handler
+     *
+     * @param request      request
+     * @param response     response
+     * @param handler      handler
      * @param modelAndView modelAndView
      * @throws Exception
      */
