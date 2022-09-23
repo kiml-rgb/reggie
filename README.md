@@ -1,28 +1,3 @@
----
-title: 瑞吉外卖项目总结
-tags:
-  - Java
-categories:
-  - Java
-  - projects
-  - reggie
-abbrlink: 6195f8ba
-date: 2022-09-19 15:53:33
-typora-root-url: reggie-README
----
-
-> 本项目使用springboot + mybatisplus进行开发。所有接口都已经给出，返回参数也都已经定义好，只有在部分模块涉及到多表联查，算是一个比较简单的入门项目。
->
-> 项目地址如下：
->
-> https://github.com/kiml-rgb/reggie 
->
-> https://gitee.com/kiml18058625598/reggie
-
-<!--more-->
-
-------
-
 ## 瑞吉外卖项目介绍
 
 ### 项目介绍
