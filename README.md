@@ -2,7 +2,7 @@
 
 ### 项目介绍
 
-![项目界面](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20210726000655646.png)
+![项目界面](image-20210726000655646.png)
 
 本项目（瑞吉外卖）是专门为餐饮企业（餐厅、饭店）定制的一款软件产品，包括 系统管理后台 和 移动端应用 两部分。其中系统管理后台主要提供给餐饮企业内部员工使用，可以对餐厅的分类、菜品、套餐、订单、员工等进行管理维护。移动端应用主要提供给消费者使用，可以在线浏览菜品、添加购物车、下单等。
 
@@ -49,7 +49,7 @@
 
 ### 技术选型
 
-![技术选型](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20210726005437857.png)
+![技术选型](image-20210726005437857.png)
 
 **1. 用户层**
 
@@ -101,7 +101,7 @@ junit：单元测试工具，开发人员功能实现完毕后，需要通过jun
 
 ### 功能架构
 
-![功能架构](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20210726122825225.png)
+![功能架构](image-20210726122825225.png)
 
 **1. 移动端前台功能**
 
@@ -135,7 +135,7 @@ junit：单元测试工具，开发人员功能实现完毕后，需要通过jun
 
 本项目数据库sql语句在项目文件下
 
-![reggie.sql](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220919172356989.png)
+![reggie.sql](image-20220919172356989.png)
 
 
 
@@ -208,7 +208,7 @@ public class App {
 
 本项目的前端代码已经提供，不需要编写，只要能看懂即可，后续需要查看前端需要的数据，定义一些数据。
 
-![前端静态资源](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220919174107850.png)
+![前端静态资源](image-20220919174107850.png)
 
 直接将静态资源bacakend和front文件放到static目录文件下
 
@@ -248,13 +248,13 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 创建实体类包，将所有实体类直接导入
 
-![实体类](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220920090521628.png)
+![实体类](image-20220920090521628.png)
 
 
 
 #### vo和dto导入
 
-![vo和dto](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220920101609748.png)
+![vo和dto](/image-20220920101609748.png)
 
 > VO（View Object）：视图对象，用于展示层，它的作用是把某个指定页面（或组件）的所有数据封装起来。通常起的类名会加上VO。
 >
@@ -479,11 +479,11 @@ public class CommonController {
 
 **文件上传相关：**
 
-![文件上传的实现方式](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220920210039909.png)
+![文件上传的实现方式](/image-20220920210039909.png)
 
-![文件上传的三要素](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220920210125183.png)
+![文件上传的三要素](/image-20220920210125183.png)
 
-![文件上传的原理](https://gitee.com/kiml18058625598/reggie/blob/day07/reggie-README/image-20220920210202727.png)
+![文件上传的原理](/image-20220920210202727.png)
 
 
 
