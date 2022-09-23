@@ -72,6 +72,7 @@
             <version>5.8.4</version>
         </dependency>
 
+        <!--阿里云短信发送-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>

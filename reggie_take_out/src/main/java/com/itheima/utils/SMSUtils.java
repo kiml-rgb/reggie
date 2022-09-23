@@ -46,9 +46,11 @@ public class SMSUtils {
 
 
     public static SendSmsResponse sendSM(String phoneNum, String code) {
+        // 创建一个 Aliyun Acs Client, 用于发起 OpenAPI 请求
         DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", ak, sk);
         IAcsClient client = new DefaultAcsClient(profile);
 
+        // 创建一个 AssumeRoleRequest 并设置请求参数
         SendSmsRequest request = new SendSmsRequest();
         request.setPhoneNumbers(phoneNum);
         request.setSignName(signName);
@@ -56,6 +58,7 @@ public class SMSUtils {
         request.setTemplateParam("{\"code\":\"" + code + "\"}");
         SendSmsResponse response = null;
         try {
+            // 发起请求，并得到response
             response = client.getAcsResponse(request);
             System.out.println(new Gson().toJson(response));
             return response;

@@ -29,6 +29,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R sendMsg(String phone) {
         if (!PhoneUtil.isMobile(phone)) return R.error("手机号码不合法");
+        /*SMSUtils.sendSM(phone,code);*/
         // 生成6位验证码
         String code = RandomUtil.randomNumbers(6);
         System.out.println("code = " + code);
