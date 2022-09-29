@@ -688,7 +688,7 @@ aliyun.sms.templateCode=SMS_184110818
     }
 ```
 
-
+------
 
 ## 代码增强
 
@@ -1258,7 +1258,7 @@ public @interface NoAuth {
 if (((HandlerMethod) handler).hasMethodAnnotation(NoAuth.class)) return true;
 ```
 
-
+------
 
 ## 代码优化
 
@@ -1402,3 +1402,372 @@ public R findCategory(Integer type) {
 原因：如果延迟时间小于写入redis的时间，会导致请求1清除了缓存，但是请求2缓存还未写入的尴尬。。。
 
 ps：一般写入的时间会远小于5秒
+
+
+
+### SpringCache（了解）
+
+> 缓存除了保存在Redis，还可以保存在WEB服务器中（ServletContext）
+>
+> SpringCache是一个框架，提供注解，使用这些注解可以把数据保存到WEB服务器（默认保存缓存的位置）
+>
+> 如果是缓存到WEB服务器中，那么==服务重启数据就会丢失==
+
+1. 在启动类上添加`@EnableCaching`
+2. 在保存方法上加注解`@CachePut`
+
+```java
+/**
+* CachePut：将方法返回值放入缓存
+* value：缓存的名称，每个缓存名称下面可以有多个key
+* key：缓存的key
+*
+* Redis中的Hash结构
+* Redis的Key : {key:value,key,values}
+* userCache: {key,方法的返回值}
+*
+* SPEL: SpringEL表达式 #容器中取值
+*
+* Key的写法有:
+* 1. #形参名称 #形参名称.属性名称
+* 2. #p0 #p1 ..
+* 3. #result #result.属性名称
+*/
+@CachePut(value = "userCache", key = "#user.id")
+@PostMapping
+public User save(User user) {
+	userService.save(user);
+	return user;
+}
+```
+
+3. 在查询方法上加注解` @Cacheable`
+
+```java
+/**
+* Cacheable: 在方法执行前spring先查看缓存中是否有数据
+* 如果有数据，则直接返回缓存数据；
+* 若没有数据，调用方法并将方法返回值放到缓存中
+*
+* value：缓存的名称，每个缓存名称下面可以有多个key SPEL
+* key：缓存的key
+*/
+@Cacheable(value = "userCache",key = "#id")
+@GetMapping("/{id}")
+public User getById(@PathVariable Long id){
+	User user = userService.getById(id);
+	return user;
+}
+```
+
+4.  在删除和更新方法上加注解 `@CacheEvict`
+
+```java
+/**
+* CacheEvict: 清理指定缓存
+* value：缓存的名称，每个缓存名称下面可以有多个key
+* key：缓存的key
+*/
+@CacheEvict(value = "userCache",key = "#p0")
+@DeleteMapping("/{id}")
+public void delete(@PathVariable Long id){
+	userService.removeById(id);
+}
+
+```
+
+
+
+### 前后台分离
+
+在实际开发中的开发的流程
+
+1. 后台人员应该根据需求文档和原型图去确定接口
+
+2. 根据接口编写接口文档
+
+3. 把接口文档分享给其他平台
+
+4. 所有平台都按照接口文档进行开发
+
+5. 当其他平台都开发完成后要进行联调(由其他平台去调用后台接口)
+
+   后台和前端是分离的是同步开发的, 并且所有平台都必须要严格按照接口文档进行开发。后台的接口文档通常是有开发人员来编写
+
+6. 怎么设计接口
+
+  > 核心是要确定请求参数和请求返回值
+
+  - 请求参数: 依据SQL中的条件(参数)
+  - 请求返回值: 依据原型图(原型图上要展示什么我们就返回什么)
+  - 请求地址: 自己定义
+  - 请求方式: 遵循RestFul的编程风格
+
+
+
+#### 传统的文档
+
+1. word
+2. markdown
+3. pdf(对公)
+
+
+
+#### 在线编辑平台
+
+- YAPI
+
+
+
+#### Swagger框架
+
+1. 导入依赖
+
+```xml
+<dependency>
+	<groupId>com.github.xiaoymin</groupId>
+	<artifactId>knife4j-spring-boot-starter</artifactId>
+	<version>2.0.5</version>
+</dependency>
+```
+
+2. 写入配置类
+
+```java
+@Configuration
+@EnableSwagger2
+@EnableKnife4j
+public class SwaggerConfig {
+	@Bean
+	public Docket createRestApi() {
+	// 文档类型
+		return new Docket(DocumentationType.SWAGGER_2)
+			.apiInfo(apiInfo())
+			.select()
+			/* 接口包所在的路径 也就是你的Controller包 */
+			.apis(RequestHandlerSelectors.basePackage("com.itheima.controller"))
+			.paths(PathSelectors.any())
+			.build();
+	}
+	/* 当前这个接口文档的信息 */
+	private ApiInfo apiInfo() {
+		return new ApiInfoBuilder()
+			.title("瑞吉外卖")
+			.version("1.0")
+			.description("瑞吉外卖接口文档")
+			.build();
+	}
+}
+```
+
+3. 在Controller中使用
+
+```java
+@RestController
+@RequestMapping("dish")
+@Api("菜品相关的接口")
+public class DishController {
+	@Autowired
+	private DishService dishService;
+    
+    /**
+    * 新增菜品的接口
+    *
+    * @param dish
+    * @return
+    * @throws IOException
+    */
+    @PostMapping
+    @ApiOperation("新增一个菜品")
+    /*@ApiImplicitParams({
+    @ApiImplicitParam(name = "page",value = "页码",required = true),
+    @ApiImplicitParam(name = "pageSize",value = "每页记录数",required = true),
+    @ApiImplicitParam(name = "name",value = "套餐名称",required = false)})*/
+    @ApiImplicitParam(name = "dish",value = "新增菜品数据封装对象",required = true)
+    public R saveDish(@RequestBody Dish dish) throws IOException {
+        return dishService.saveDish(dish);
+    }
+}
+```
+
+4. 在实体类中使用
+
+```java
+@Data
+@ApiModel("返回给前台的数据对象")
+public class R<T> {
+	//编码：1成功，0和其它数字为失败
+	@ApiModelProperty("自定义状态码")
+	private Integer code;
+	//错误信息
+    @ApiModelProperty("自定义状态码描述信息")
+	private String msg;
+	//数据
+	@ApiModelProperty("响应体数据")
+	private T data;
+	//动态数据
+	@ApiModelProperty("扩展数据")
+	private Map map = new HashMap();
+    public static <T> R<T> success(T object) {
+        R<T> r = new R<T>();
+        r.data = object;
+        r.code = 1;
+        return r;
+    }
+    public static <T> R<T> error(String msg) {
+        R r = new R();
+        r.msg = msg;
+        r.code = 0;
+        return r;
+    }
+    public R<T> add(String key, Object value) {
+        this.map.put(key, value);
+        return this;
+    }
+}
+```
+
+> 访问地址: http://localhost:端口/doc.html
+
+
+
+#### APIFox和APIPost
+
+> Postman + Swagger + Mock + JMeter
+
+
+
+### MySQL的主从
+
+> 使用主从服务器可以做到读写分离
+>
+> 可以让读操作走专门的查询服务器可以提高查询的并发数
+
+1. 引入依赖
+
+```xml
+<dependency>
+	<groupId>org.apache.shardingsphere</groupId>
+	<artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+	<version>4.0.0-RC1</version>
+</dependency>
+```
+
+2. pom.xml
+
+```properties
+spring:
+    shardingsphere:
+        datasource:
+            names: # 如果你有多个数据库用 names 多个数据库之间用逗号分割
+                master,slave # 这两个名称可以随便定义
+            master:
+                type: com.alibaba.druid.pool.DruidDataSource
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://192.168.200.128:3307/rw?characterEncoding=utf-8
+                username: root
+                password: root
+            slave:
+                type: com.alibaba.druid.pool.DruidDataSource
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://192.168.200.128:3308/rw?characterEncoding=utf-8
+                username: root
+                password: root
+        masterslave:
+            # 如果有多个从服务器的负载均衡策略
+            # ROUND_ROBIN(轮询)，RANDOM（随机）
+            load-balance-algorithm-type: round_robin #轮询
+            # 数据源名称 这个名称可以随便写
+            name: dataSource
+            # 主库数据源名称
+            master-data-source-name: master
+            # 从库数据源名称列表，多个逗号分隔
+            slave-data-source-names: slave
+        props:
+            sql:
+                show: true #开启SQL显示，默认false
+    main:
+        allow-bean-definition-overriding: true # 后面创建的Bean允许覆盖前面已经创建的Bean
+```
+
+
+
+### Nginx
+
+> Nginx是一个静态资源服务器
+>
+> Nginx还可以作为反向代理服务器
+>
+> 可以为WEB服务器做资源转发
+
+
+
+❗❗❗每次修改完文件后要重新加载配置`nginx.exe -s reload`
+
+
+
+- 正向代理：用户访问某个网站，不是直接访问， 而是通过代理软件替用户访问，代理的目标对象是==用户==
+- 反向代理：用户访问某个网站，不是直接访问，而是通过代理软件找到web服务器，代理的目标对象是==服务器(网站)==
+- 路由转发：浏览器发送请求，在Nginx中接收这次请求并且转发给WEB服务器
+
+
+
+#### Nginx配置文件
+
+- 通过 proxy_pass 可以实现反向代理
+- 通过 rewrite 可以实现路由转发
+
+```apl
+# springboots这里可以随便写
+upstream springboots {
+# Nginx在这两个服务器之间实现负载均衡（轮询）
+	server 127.0.0.1:8081;
+	server 127.0.0.1:8082;
+}
+
+# 一个Server代表一个站点 一个Nginx可以做多个站点的配置
+server {
+	listen       80; # 当前站点监听的接口
+    server_name  localhost; # 当前站点的域名
+
+	#charset koi8-r;
+	#access_log  logs/host.access.log  main;
+	
+	location /user {
+		proxy_pass http://springboots; # 反向代理 本身自带负载均衡
+	}
+
+	# 一个站点中可以有多个location， 一个location代表一类资源的目录配置
+	location / {
+    	root   html; # 静态资源根目录
+        index  index.html index.htm; # 默认访问的资源名称
+        }
+
+	#error_page  404              /404.html;
+
+	# redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html; # 报错的页面
+    location = /50x.html {
+    rewrite ^(/50x.html).*$ /hexo/public/index.html last; # 路由转发
+    }
+}
+```
+
+
+
+### 项目部署流程
+
+![项目部署流程](README/image-20220929171615155.png)
+
+1. 在Linux上启动两个MySQL服务器(docker) 
+2. 在Linux上启动Redis
+3. 在Linux上启动Nginx 
+4. 修改瑞吉项目中的配置文件 
+   1. 修改MySQL的主从读写分离 
+   2. 修改Redis的地址 
+5. 将静态资源上传到Linux并配置Nginx的静态资源地址 
+6. 配置Nginx中的路由转发地址 
+7. 把瑞吉项目打成jar包上传到Linux服务器 
+8. 启动瑞吉项目
+9. 访问Nginx中的静态资源
